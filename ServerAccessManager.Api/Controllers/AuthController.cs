@@ -82,10 +82,19 @@ public class AuthController : ControllerBase
         }
     }
 
+    [HttpPost("logout")]
+    public async Task<IActionResult> Logout()
+    {
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        return Ok(new { message = "Выход выполнен." });
+    }
+
     [HttpGet("users")]
     public async Task<IActionResult> GetUsers()
     {
-        var users = await _context.Users.ToListAsync();
+        var users = await _context.Users
+            .Select(u => new { u.Id, u.Username, u.Role })
+            .ToListAsync();
         return Ok(users);
     }
 }
